@@ -1,0 +1,25 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ReadItem from '../components/ReadItem.astro';
+
+const reads = (await getCollection('reads')).sort(
+  (a, b) => b.data.dateRead.valueOf() - a.data.dateRead.valueOf()
+);
+---
+
+<BaseLayout title="My Reads" description="Books and articles I've been reading.">
+  <h1>My Reads</h1>
+  <p class="muted">Books and articles I've found worthwhile, with notes.</p>
+  <div class="list">
+    {reads.map((read) => <ReadItem read={read} />)}
+  </div>
+</BaseLayout>
+
+<style>
+  .list {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+</style>

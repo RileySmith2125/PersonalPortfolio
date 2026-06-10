@@ -1,0 +1,80 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+
+interface Props {
+  read: CollectionEntry<'reads'>;
+}
+
+const { read } = Astro.props;
+const { title, author, type, url: link, dateRead, rating } = read.data;
+const { Content } = await render(read);
+
+const stars = rating ? '★'.repeat(rating) + '☆'.repeat(5 - rating) : null;
+const fmt = dateRead.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+---
+
+<article class="card read">
+  <div class="head">
+    <h3>
+      {link ? (
+        <a href={link} target="_blank" rel="noopener noreferrer">{title}</a>
+      ) : (
+        title
+      )}
+    </h3>
+    <span class="muted date">{fmt}</span>
+  </div>
+  <p class="meta muted">
+    {author} · <span class="type">{type}</span>
+    {stars && <span class="stars" aria-label={`Rated ${rating} out of 5`}> · {stars}</span>}
+  </p>
+  <div class="notes">
+    <Content />
+  </div>
+</article>
+
+<style>
+  .read:hover {
+    transform: none;
+  }
+
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-3);
+  }
+
+  .head h3 {
+    margin: 0;
+  }
+
+  .date {
+    font-size: var(--text-sm);
+    white-space: nowrap;
+  }
+
+  .meta {
+    margin: var(--space-1) 0 var(--space-2);
+    font-size: var(--text-sm);
+  }
+
+  .type {
+    text-transform: capitalize;
+  }
+
+  .stars {
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+
+  .notes {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+
+  .notes :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>

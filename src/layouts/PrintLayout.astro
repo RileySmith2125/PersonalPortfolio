@@ -1,0 +1,26 @@
+---
+import '@fontsource-variable/inter';
+import '../styles/print.css';
+import { site } from '../data/site';
+
+interface Props {
+  title?: string;
+}
+
+const { title = `${site.name} — Resume` } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <div class="paper">
+      <slot />
+    </div>
+  </body>
+</html>

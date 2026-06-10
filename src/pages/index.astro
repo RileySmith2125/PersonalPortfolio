@@ -1,0 +1,66 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import SocialLinks from '../components/SocialLinks.astro';
+import { site, url } from '../data/site';
+
+const featured = (
+  await getCollection('projects', ({ data }) => data.featured && !data.draft)
+).sort((a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf());
+---
+
+<BaseLayout>
+  <section class="hero">
+    <h1>{site.name}</h1>
+    <p class="tagline">{site.tagline}</p>
+    <p class="bio muted">{site.bio}</p>
+    <SocialLinks />
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Featured projects</h2>
+      <a href={url('/projects')}>All projects →</a>
+    </div>
+    <div class="grid">
+      {featured.map((project) => <ProjectCard project={project} />)}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding-top: var(--space-5);
+  }
+
+  .tagline {
+    font-size: var(--text-lg);
+    color: var(--accent);
+    font-weight: 600;
+    margin: 0 0 var(--space-3);
+  }
+
+  .bio {
+    max-width: 38rem;
+    margin-bottom: var(--space-4);
+  }
+
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-3);
+  }
+
+  .section-head a {
+    font-size: var(--text-sm);
+    font-weight: 550;
+    white-space: nowrap;
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-3);
+  }
+</style>

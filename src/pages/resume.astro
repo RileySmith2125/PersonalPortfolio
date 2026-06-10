@@ -1,0 +1,53 @@
+---
+import { getCollection } from 'astro:content';
+import PrintLayout from '../layouts/PrintLayout.astro';
+import { site } from '../data/site';
+
+// Featured projects make the resume; fall back to all non-drafts if none are featured.
+const all = await getCollection('projects', ({ data }) => !data.draft);
+const featured = all.filter((p) => p.data.featured);
+const projects = (featured.length > 0 ? featured : all).sort(
+  (a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf()
+);
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+const githubHandle = site.github.replace(/^https?:\/\//, '');
+const linkedinHandle = site.linkedin.replace(/^https?:\/\//, '');
+---
+
+<PrintLayout>
+  <header class="resume-header">
+    <h1>{site.name}</h1>
+    <p class="tagline">{site.tagline}</p>
+    <div class="contact-line">
+      <a href={`mailto:${site.email}`}>{site.email}</a>
+      <a href={site.github}>{githubHandle}</a>
+      <a href={site.linkedin}>{linkedinHandle}</a>
+    </div>
+  </header>
+
+  <section>
+    <h2>Summary</h2>
+    <p>{site.bio}</p>
+  </section>
+
+  <section>
+    <h2>Projects</h2>
+    {projects.map(({ data }) => (
+      <div class="entry">
+        <div class="entry-head">
+          <h3>{data.title}</h3>
+          <span class="entry-dates">
+            {fmt(data.startDate)} – {data.endDate ? fmt(data.endDate) : 'Present'}
+          </span>
+        </div>
+        <p>{data.description}</p>
+        {data.tags.length > 0 && (
+          <p class="entry-tags">{data.tags.join(' · ')}</p>
+        )}
+        {data.repoUrl && <p class="entry-link">{data.repoUrl}</p>}
+      </div>
+    ))}
+  </section>
+</PrintLayout>

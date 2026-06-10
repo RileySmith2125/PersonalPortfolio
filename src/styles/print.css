@@ -1,0 +1,139 @@
+/* ---------------------------------------------------------------------------
+   Resume document styles. Used only by PrintLayout (/resume).
+   On screen it renders as a centered white "paper" preview; in print/PDF the
+   @page rules take over.
+--------------------------------------------------------------------------- */
+@page {
+  size: letter;
+  margin: 0.6in;
+}
+
+:root {
+  --ink: #111418;
+  --ink-muted: #555e6b;
+  --ink-accent: #4338ca;
+  --rule: #d7dbe2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #e9ebef;
+  color: var(--ink);
+  font-family: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.45;
+}
+
+.paper {
+  max-width: 8.5in;
+  margin: 2rem auto;
+  padding: 0.75in 0.6in;
+  background: #fff;
+  box-shadow: 0 2px 24px rgba(0, 0, 0, 0.15);
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .paper {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+}
+
+/* Header */
+.resume-header {
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 10pt;
+  margin-bottom: 14pt;
+}
+
+.resume-header h1 {
+  margin: 0;
+  font-size: 22pt;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+
+.resume-header .tagline {
+  margin: 2pt 0 6pt;
+  font-size: 11pt;
+  color: var(--ink-muted);
+}
+
+.contact-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4pt 14pt;
+  font-size: 9.5pt;
+  color: var(--ink-muted);
+}
+
+.contact-line a {
+  color: var(--ink-muted);
+  text-decoration: none;
+}
+
+/* Sections */
+section {
+  margin-bottom: 14pt;
+}
+
+h2 {
+  font-size: 12pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-accent);
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 3pt;
+  margin: 0 0 8pt;
+  break-after: avoid;
+}
+
+.entry {
+  margin-bottom: 10pt;
+  break-inside: avoid;
+}
+
+.entry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12pt;
+}
+
+.entry-head h3 {
+  margin: 0;
+  font-size: 11pt;
+  font-weight: 650;
+}
+
+.entry-dates {
+  font-size: 9pt;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+.entry p {
+  margin: 2pt 0;
+}
+
+.entry-tags {
+  font-size: 9pt;
+  color: var(--ink-muted);
+}
+
+.entry-link {
+  font-size: 9pt;
+  color: var(--ink-accent);
+  word-break: break-all;
+}

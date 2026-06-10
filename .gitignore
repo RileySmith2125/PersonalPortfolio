@@ -1,0 +1,19 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# generated artifacts
+resume.pdf
+
+# logs
+npm-debug.log*
+
+# environment
+.env
+.env.*
+
+# editor/local
+.claude/

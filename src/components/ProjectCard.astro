@@ -1,0 +1,65 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Tag from './Tag.astro';
+import { url } from '../data/site';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { title, description, startDate, endDate, tags, image } = project.data;
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+const dateRange = `${fmt(startDate)} – ${endDate ? fmt(endDate) : 'Present'}`;
+---
+
+<a class="card" href={url(`/projects/${project.id}`)}>
+  {image && <Image src={image} alt={title} width={640} class="thumb" />}
+  <div class="head">
+    <h3>{title}</h3>
+    <span class="dates muted">{dateRange}</span>
+  </div>
+  <p class="muted">{description}</p>
+  {tags.length > 0 && (
+    <div class="tags">
+      {tags.map((tag) => <Tag label={tag} />)}
+    </div>
+  )}
+</a>
+
+<style>
+  .thumb {
+    width: 100%;
+    object-fit: cover;
+    margin-bottom: var(--space-3);
+  }
+
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-3);
+  }
+
+  .head h3 {
+    margin: 0;
+  }
+
+  .dates {
+    font-size: var(--text-sm);
+    white-space: nowrap;
+  }
+
+  p {
+    margin: var(--space-2) 0 var(--space-3);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+</style>

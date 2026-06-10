@@ -1,0 +1,77 @@
+---
+import { site, url } from '../data/site';
+
+const nav = [
+  { label: 'Home', href: url('/') },
+  { label: 'Projects', href: url('/projects') },
+  { label: 'Reads', href: url('/reads') },
+];
+
+const current = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (href: string) => (href.replace(/\/$/, '') || '/') === current;
+---
+
+<header>
+  <div class="inner">
+    <a class="brand" href={url('/')}>{site.name}</a>
+    <nav aria-label="Main">
+      {nav.map((item) => (
+        <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+          {item.label}
+        </a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<style>
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand {
+    font-weight: 750;
+    font-size: var(--text-lg);
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .brand:hover {
+    text-decoration: none;
+    color: var(--accent);
+  }
+
+  nav {
+    display: flex;
+    gap: var(--space-4);
+  }
+
+  nav a {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    font-weight: 550;
+  }
+
+  nav a:hover {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  nav a[aria-current='page'] {
+    color: var(--accent);
+  }
+</style>
