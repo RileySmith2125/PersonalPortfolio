@@ -3,7 +3,7 @@ title: Personal Portfolio
 description: Astro-powered portfolio with Markdown content collections and one-command PDF resume export.
 startDate: 2026-06-10
 tags: [astro, typescript, css]
-repoUrl: https://github.com/<username>/PersonalPortfolio
+repoUrl: https://github.com/RileySmith2125/PersonalPortfolio
 featured: true
 ---
 

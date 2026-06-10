@@ -4,7 +4,7 @@ export const site = {
   tagline: 'Software developer',
   bio: 'Short 2–3 sentence bio goes here. Replace this with who you are, what you build, and what you care about.',
   email: 'rileyk2x@gmail.com',
-  github: 'https://github.com/<username>',
+  github: 'https://github.com/RileySmith2125',
   linkedin: 'https://www.linkedin.com/in/<username>',
 };
 
