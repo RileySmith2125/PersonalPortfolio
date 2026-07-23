@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    :root { --bg:#e2dcd2; --ink:#3d3730; --muted:#7e766a; --rule:#c8c0b4; --faint:#d7d0c5; --accent:#3d3730; --font:'Newsreader',Georgia,serif; }
+    html, body { margin: 0; }
+    body { background: var(--bg); }
+    ::selection { background: #3d3730; color: #e2dcd2; }
+    a { text-decoration: none; color: inherit; }
+    button { font-family: inherit; }
+    ul { margin: 0; }
+    html[data-figs="1"] [data-app] { font-variant-numeric: oldstyle-nums; font-feature-settings: 'onum' 1; }
+    html[data-italic="1"] [data-bodytext] { font-style: italic; }
+    html[data-smallcaps="1"] [data-label] { text-transform: none !important; font-variant-caps: small-caps !important; letter-spacing: 0.05em !important; }
+    html[data-dropcap="1"] [data-about-para] { text-align: left !important; }
+    html[data-dropcap="1"] [data-about-para]::first-letter { float: left; font-size: 3.3em; line-height: 0.7; padding: 0.06em 0.12em 0 0; font-weight: 500; }
+    @page { size: letter; margin: 0; }
+    [data-print-doc] { display: none; }
+    @media print {
+      [data-print-hide] { display: none !important; }
+      [data-print-doc] section { -webkit-print-color-adjust: exact; print-color-adjust: exact; break-after: page; }
+      [data-print-doc] section:last-child { break-after: auto; }
+
+      html[data-print="resume"], html[data-print="resume"] body { background: #fff !important; }
+      html[data-print="resume"] [data-app] { background: #fff !important; min-height: 0 !important; }
+      html[data-print="resume"] [data-resume-shell] { padding: 0 !important; background: #fff !important; }
+      html[data-print="resume"] [data-resume-paper] { box-shadow: none !important; margin: 0 !important; max-width: none !important; width: auto !important; padding: 0.66in 0.62in !important; }
+
+      html[data-print="full"], html[data-print="full"] body { background: var(--bg) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      html[data-print="full"] [data-app] { display: none !important; }
+      html[data-print="full"] [data-print-doc] { display: block !important; }
+    }
+  </style>
+</helmet>
+
+<div data-app ref="{{ rootRef }}" style="min-height:100vh; background:var(--bg); color:var(--ink); font-family:var(--font); -webkit-font-smoothing:antialiased;">
+
+  <header data-print-hide style="position:sticky; top:0; z-index:20; background:var(--bg);">
+    <div style="max-width:1000px; margin:0 auto; padding:22px clamp(22px,6vw,40px); display:flex; justify-content:flex-end;">
+      <nav style="display:flex; align-items:center; gap:13px; font-size:10px; letter-spacing:0.2em; text-transform:uppercase;">
+        <sc-for list="{{ nav }}" as="item" hint-placeholder-count="4">
+          <div style="display:flex; align-items:center; gap:13px;">
+            <sc-if value="{{ item.showDivider }}" hint-placeholder-val="{{ false }}"><span style="display:block; width:1px; height:10px; background:var(--rule);"></span></sc-if>
+            <a data-label onClick="{{ item.go }}" style="{{ item.style }}">{{ item.label }}</a>
+          </div>
+        </sc-for>
+      </nav>
+    </div>
+  </header>
+
+  <button data-print-hide onClick="{{ openPrintHint }}" title="Download the whole portfolio as a multi-page PDF" style="position:fixed; right:20px; bottom:20px; z-index:40; font-size:10px; letter-spacing:0.16em; text-transform:uppercase; cursor:pointer; background:var(--ink); color:var(--bg); border:none; padding:12px 17px; box-shadow:0 6px 24px rgba(0,0,0,0.16);">Save as PDF</button>
+
+  <sc-if value="{{ showPrintHint }}" hint-placeholder-val="{{ false }}">
+  <div data-print-hide onClick="{{ closePrintHint }}" style="position:fixed; inset:0; z-index:60; background:rgba(31,28,24,0.32); display:flex; align-items:center; justify-content:center; padding:24px;">
+    <div onClick="{{ stop }}" style="background:var(--bg); border:1px solid var(--rule); max-width:412px; width:100%; padding:34px 34px 28px; box-shadow:0 18px 60px rgba(0,0,0,0.24);">
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:var(--muted);">Before you save</div>
+      <h2 style="font-size:24px; font-weight:500; letter-spacing:-0.015em; margin:14px 0 0; line-height:1.2;">Turn on background graphics</h2>
+      <p style="font-size:13.5px; line-height:1.8; color:var(--muted); margin:16px 0 0;">In the print window, open <span style="color:var(--ink);">More settings</span> and tick <span style="color:var(--ink);">Background graphics</span>. Without it, the pages print on plain white and lose the clay tone and rules.</p>
+      <div style="display:flex; align-items:center; gap:11px; margin-top:18px; padding:13px 15px; border:1px solid var(--rule); background:var(--faint);">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:15px; color:var(--ink); line-height:1;">☑</span>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.04em; color:var(--ink);">Background graphics</span>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:9px; margin-top:26px;">
+        <button onClick="{{ closePrintHint }}" style="font-size:10px; letter-spacing:0.16em; text-transform:uppercase; cursor:pointer; background:transparent; color:var(--muted); border:1px solid var(--rule); padding:10px 15px;">Cancel</button>
+        <button onClick="{{ confirmPrintFull }}" style="font-size:10px; letter-spacing:0.16em; text-transform:uppercase; cursor:pointer; background:var(--ink); color:var(--bg); border:none; padding:10px 16px;">Continue</button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============================== ABOUT (home) ============================== -->
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <main style="min-height:calc(100vh - 68px); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:48px clamp(24px,6vw,40px) 96px;">
+    <h1 style="font-size:clamp(32px,6.4vw,74px); font-weight:400; letter-spacing:-0.025em; line-height:1.05; margin:0; white-space:nowrap;">Riley Smith</h1>
+    <p data-about-para data-bodytext style="font-size:14.5px; line-height:2; color:var(--muted); max-width:48ch; margin:32px 0 0;">This portfolio is a chance for me to highlight interests and projects that you won’t find on my resume. Machine learning, geopolitics, and football are a couple things you’ll find. Enjoy!</p>
+  </main>
+  </sc-if>
+
+  <!-- ============================== PROJECTS INDEX ============================== -->
+  <sc-if value="{{ isProjects }}" hint-placeholder-val="{{ false }}">
+  <main style="max-width:940px; margin:0 auto; padding:clamp(56px,10vh,116px) clamp(24px,6vw,44px) 120px;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(238px,1fr)); gap:clamp(30px,4vw,46px) clamp(22px,2.6vw,30px);">
+      <sc-for list="{{ projects }}" as="item" hint-placeholder-count="6">
+        <div onClick="{{ item.open }}" style="cursor:pointer; padding:12px; margin:-12px; transition:background .16s ease;" style-hover="background:var(--faint)">
+          <div style="position:relative; aspect-ratio:4/3; border:1px solid var(--rule); background-color:var(--bg); background-image:repeating-linear-gradient(135deg, var(--faint) 0, var(--faint) 1px, transparent 1px, transparent 11px); display:flex; align-items:center; justify-content:center;">
+            <span style="font-size:8.5px; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); background:var(--bg); padding:5px 9px; border:1px solid var(--rule);">{{ item.title }}</span>
+          </div>
+          <div style="font-size:17px; font-weight:500; letter-spacing:-0.01em; margin-top:15px;">{{ item.title }}</div>
+          <div style="font-size:12px; color:var(--muted); line-height:1.5; margin-top:5px;">{{ item.short }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </main>
+  </sc-if>
+
+  <!-- ============================== PROJECT DETAIL ============================== -->
+  <sc-if value="{{ isProject }}" hint-placeholder-val="{{ false }}">
+  <main style="max-width:640px; margin:0 auto; padding:clamp(52px,9vh,104px) clamp(24px,6vw,40px) 120px;">
+    <a data-label onClick="{{ goProjects }}" style="font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); cursor:pointer;">← Projects</a>
+    <h1 style="font-size:clamp(30px,4.6vw,48px); font-weight:400; letter-spacing:-0.02em; margin:20px 0 14px;">{{ proj.title }}</h1>
+    <div data-label style="font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); line-height:1.9;">{{ proj.metaLine }}</div>
+    <div style="display:flex; gap:22px; margin-top:18px; font-size:10px; letter-spacing:0.16em; text-transform:uppercase;">
+      <sc-if value="{{ proj.hasSource }}" hint-placeholder-val="{{ false }}">
+        <a href="{{ proj.sourceUrl }}" target="_blank" rel="noopener" style="border-bottom:1px solid var(--accent); padding-bottom:3px; color:var(--accent);">Source ↗</a>
+      </sc-if>
+      <sc-if value="{{ proj.hasDemo }}" hint-placeholder-val="{{ false }}">
+        <a href="{{ proj.demoUrl }}" target="_blank" rel="noopener" style="border-bottom:1px solid var(--accent); padding-bottom:3px; color:var(--accent);">Live demo ↗</a>
+      </sc-if>
+    </div>
+
+    <div style="margin-top:clamp(36px,6vh,60px);">
+      <sc-for list="{{ proj.overview }}" as="para" hint-placeholder-count="2">
+        <p data-bodytext style="font-size:14px; line-height:2; margin:0 0 22px;">{{ para }}</p>
+      </sc-for>
+    </div>
+
+    <ul style="list-style:none; padding:0; margin:18px 0 0; border-top:1px solid var(--rule);">
+      <sc-for list="{{ proj.bullets }}" as="b" hint-placeholder-count="3">
+        <li style="font-size:12.5px; color:var(--muted); line-height:1.65; padding:13px 0 13px 22px; border-bottom:1px solid var(--rule); position:relative;"><span style="position:absolute; left:0; color:var(--accent);">—</span>{{ b }}</li>
+      </sc-for>
+    </ul>
+
+    <div style="margin-top:clamp(36px,6vh,60px);">
+      <div style="position:relative; aspect-ratio:16/9; border:1px solid var(--rule); background-color:var(--bg); background-image:repeating-linear-gradient(135deg, var(--faint) 0, var(--faint) 1px, transparent 1px, transparent 11px); display:flex; align-items:center; justify-content:center;">
+        <span style="font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); background:var(--bg); padding:7px 12px; border:1px solid var(--rule);">[ {{ proj.caption }} ]</span>
+      </div>
+      <div data-label style="font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin-top:12px;">Drop a screenshot here</div>
+    </div>
+  </main>
+  </sc-if>
+
+  <!-- ============================== READS ============================== -->
+  <sc-if value="{{ isReads }}" hint-placeholder-val="{{ false }}">
+  <main style="max-width:660px; margin:0 auto; padding:clamp(52px,9vh,104px) clamp(24px,6vw,40px) 120px;">
+    <div data-label style="font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--muted); margin-bottom:20px;">What I’m reading</div>
+    <h1 style="font-size:clamp(28px,4vw,42px); font-weight:400; letter-spacing:-0.02em; margin:0 0 16px;">Reads</h1>
+    <p data-bodytext style="font-size:13px; color:var(--muted); line-height:1.85; margin:0 0 44px; max-width:52ch;">Books and essays I keep coming back to, with the notes that stuck. Mostly systems, design, and the slow craft of building things that last.</p>
+    <div style="border-bottom:1px solid var(--rule);">
+      <sc-for list="{{ reads }}" as="r" hint-placeholder-count="5">
+        <article style="padding:24px 0; border-top:1px solid var(--rule);">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:18px;">
+            <span style="font-size:15px; font-weight:500; letter-spacing:-0.01em;">{{ r.title }}</span>
+            <span style="font-size:10px; color:var(--muted); white-space:nowrap; letter-spacing:0.08em;">{{ r.year }}</span>
+          </div>
+          <div data-label style="font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin-top:9px;">{{ r.meta }}<span style="margin-left:9px; letter-spacing:0.18em; color:var(--accent);">{{ r.stars }}</span></div>
+          <p data-bodytext style="font-size:12.5px; color:var(--muted); line-height:1.85; margin:12px 0 0;">{{ r.note }}</p>
+        </article>
+      </sc-for>
+    </div>
+  </main>
+  </sc-if>
+
+  <!-- ============================== RÉSUMÉ (print-ready, always mono) ============================== -->
+  <sc-if value="{{ isResume }}" hint-placeholder-val="{{ false }}">
+  <div data-resume-shell style="padding:clamp(28px,5vh,56px) clamp(16px,4vw,48px) 90px;">
+    <div data-print-hide style="max-width:8.5in; margin:0 auto 16px; display:flex; justify-content:space-between; align-items:baseline; gap:16px;">
+      <span style="font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted);">Resume · letter · print to PDF</span>
+      <button onClick="{{ printResume }}" style="font-size:10px; letter-spacing:0.16em; text-transform:uppercase; cursor:pointer; background:var(--ink); color:var(--bg); border:none; padding:9px 15px;">Save résumé</button>
+    </div>
+
+    <div data-resume-paper style="max-width:8.5in; margin:0 auto; background:#fff; color:#1f1c18; padding:0.78in 0.74in; box-shadow:0 1px 44px rgba(0,0,0,0.18); font-family:'IBM Plex Mono',monospace; font-size:10pt; line-height:1.5;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:20pt; border-bottom:2px solid #1f1c18; padding-bottom:11pt;">
+        <div>
+          <div style="font-size:23pt; font-weight:700; letter-spacing:-0.01em; line-height:1;">Riley Smith</div>
+          <div style="font-size:9.5pt; color:#6a6155; letter-spacing:0.18em; text-transform:uppercase; margin-top:6pt;">Software developer</div>
+        </div>
+        <div style="text-align:right; font-size:8.5pt; color:#6a6155; line-height:1.75; white-space:nowrap;">{{ emailText }}<br>github.com/rileysmith<br>Oakland, CA</div>
+      </div>
+
+      <div style="font-size:8.5pt; letter-spacing:0.2em; text-transform:uppercase; color:#1f1c18; border-bottom:1px solid #d3ccbf; padding-bottom:3pt; margin:18pt 0 9pt; font-weight:700; break-after:avoid;">Summary</div>
+      <p style="margin:0; font-size:9.5pt; line-height:1.6; color:#37322b;">Software developer with eight years across payments infrastructure and developer tools. I specialise in the parts other people would rather not own — data integrity, sync, and the systems that have to be correct at 3am. Currently independent.</p>
+
+      <div style="font-size:8.5pt; letter-spacing:0.2em; text-transform:uppercase; color:#1f1c18; border-bottom:1px solid #d3ccbf; padding-bottom:3pt; margin:18pt 0 10pt; font-weight:700; break-after:avoid;">Experience</div>
+      <sc-for list="{{ rexp }}" as="exp" hint-placeholder-count="3">
+        <div style="margin-bottom:12pt; break-inside:avoid;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:14pt;">
+            <span style="font-size:10.5pt;"><span style="font-weight:700;">{{ exp.role }}</span><span style="color:#6a6155;"> — {{ exp.org }}</span></span>
+            <span style="font-size:8.5pt; color:#6a6155; white-space:nowrap;">{{ exp.dates }}</span>
+          </div>
+          <ul style="list-style:none; margin:6pt 0 0; padding:0;">
+            <sc-for list="{{ exp.bullets }}" as="b" hint-placeholder-count="2">
+              <li style="font-size:9.5pt; line-height:1.55; margin-bottom:3pt; color:#37322b; padding-left:13pt; position:relative;"><span style="position:absolute; left:0; color:#9a9080;">—</span>{{ b }}</li>
+            </sc-for>
+          </ul>
+        </div>
+      </sc-for>
+
+      <div style="font-size:8.5pt; letter-spacing:0.2em; text-transform:uppercase; color:#1f1c18; border-bottom:1px solid #d3ccbf; padding-bottom:3pt; margin:18pt 0 9pt; font-weight:700; break-after:avoid;">Selected projects</div>
+      <sc-for list="{{ rprojects }}" as="rp" hint-placeholder-count="3">
+        <div style="display:flex; justify-content:space-between; gap:14pt; margin-bottom:6pt; break-inside:avoid;">
+          <span style="font-size:9.5pt; line-height:1.5;"><span style="font-weight:700;">{{ rp.title }}</span><span style="color:#6a6155;"> — {{ rp.blurb }}</span></span>
+          <span style="font-size:8.5pt; color:#6a6155; white-space:nowrap;">{{ rp.year }}</span>
+        </div>
+      </sc-for>
+
+      <div style="font-size:8.5pt; letter-spacing:0.2em; text-transform:uppercase; color:#1f1c18; border-bottom:1px solid #d3ccbf; padding-bottom:3pt; margin:18pt 0 9pt; font-weight:700; break-after:avoid;">Skills</div>
+      <sc-for list="{{ rskills }}" as="sk" hint-placeholder-count="3">
+        <div style="display:grid; grid-template-columns:84pt 1fr; gap:12pt; margin-bottom:5pt;">
+          <span style="font-size:8.5pt; letter-spacing:0.1em; text-transform:uppercase; color:#6a6155; padding-top:1pt;">{{ sk.label }}</span>
+          <span style="font-size:9.5pt;">{{ sk.value }}</span>
+        </div>
+      </sc-for>
+
+      <div style="font-size:8.5pt; letter-spacing:0.2em; text-transform:uppercase; color:#1f1c18; border-bottom:1px solid #d3ccbf; padding-bottom:3pt; margin:18pt 0 9pt; font-weight:700; break-after:avoid;">Education</div>
+      <div style="display:flex; justify-content:space-between; gap:14pt;">
+        <span style="font-size:9.5pt;"><span style="font-weight:700;">B.S. Computer Science</span><span style="color:#6a6155;"> — University of California, Davis</span></span>
+        <span style="font-size:8.5pt; color:#6a6155;">2019</span>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+
+</div>
+
+<!-- ============================== FULL-PORTFOLIO PRINT DOCUMENT ============================== -->
+<div data-print-doc style="background:var(--bg); color:var(--ink); font-family:var(--font);">
+
+  <!-- Cover / About -->
+  <section style="box-sizing:border-box; width:8.5in; min-height:10.7in; padding:0.9in; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+    <div style="font-family:'IBM Plex Mono',monospace; font-size:8.5pt; letter-spacing:0.24em; text-transform:uppercase; color:var(--muted); margin-bottom:26pt;">Portfolio · Riley Smith · 2026</div>
+    <div style="font-size:44pt; font-weight:400; letter-spacing:-0.025em; line-height:1.04;">Riley Smith</div>
+    <p style="font-size:13pt; line-height:1.9; color:var(--muted); max-width:30em; margin:24pt 0 0;">This portfolio is a chance for me to highlight interests and projects that you won’t find on my resume. Machine learning, geopolitics, and football are a couple things you’ll find. Enjoy!</p>
+    <div style="margin-top:40pt; font-family:'IBM Plex Mono',monospace; font-size:8pt; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted);">{{ emailText }} · github.com/rileysmith</div>
+  </section>
+
+  <!-- Projects index -->
+  <section style="box-sizing:border-box; width:8.5in; padding:0.82in 0.86in;">
+    <div style="font-family:'IBM Plex Mono',monospace; font-size:8.5pt; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted);">Index</div>
+    <h2 style="font-size:30pt; font-weight:400; letter-spacing:-0.02em; margin:8pt 0 26pt;">Projects</h2>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:30pt 26pt;">
+      <sc-for list="{{ projects }}" as="item" hint-placeholder-count="6">
+        <div>
+          <div style="position:relative; height:1.5in; border:1px solid var(--rule); background-color:var(--bg); background-image:repeating-linear-gradient(135deg, var(--faint) 0, var(--faint) 1px, transparent 1px, transparent 11px); display:flex; align-items:center; justify-content:center;">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:7.5pt; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); background:var(--bg); padding:4pt 7pt; border:1px solid var(--rule);">{{ item.title }}</span>
+          </div>
+          <div style="font-size:14pt; font-weight:500; letter-spacing:-0.01em; margin-top:11pt;">{{ item.title }}</div>
+          <div style="font-size:10.5pt; color:var(--muted); line-height:1.5; margin-top:4pt;">{{ item.short }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- One page per project -->
+  <sc-for list="{{ projects }}" as="item" hint-placeholder-count="6">
+    <section style="box-sizing:border-box; width:8.5in; padding:0.82in 0.86in;">
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:8.5pt; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted);">Project {{ item.pno }}</div>
+      <h2 style="font-size:30pt; font-weight:400; letter-spacing:-0.02em; margin:10pt 0 12pt;">{{ item.title }}</h2>
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:8.5pt; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); line-height:1.8;">{{ item.metaLine }}</div>
+      <div style="margin-top:26pt;">
+        <sc-for list="{{ item.overview }}" as="para" hint-placeholder-count="2">
+          <p style="font-size:12pt; line-height:1.95; margin:0 0 16pt;">{{ para }}</p>
+        </sc-for>
+      </div>
+      <ul style="list-style:none; padding:0; margin:14pt 0 0; border-top:1px solid var(--rule);">
+        <sc-for list="{{ item.bullets }}" as="b" hint-placeholder-count="3">
+          <li style="font-size:10.5pt; color:var(--muted); line-height:1.6; padding:10pt 0 10pt 18pt; border-bottom:1px solid var(--rule); position:relative;"><span style="position:absolute; left:0; color:var(--ink);">—</span>{{ b }}</li>
+        </sc-for>
+      </ul>
+      <div style="margin-top:30pt;">
+        <div style="position:relative; height:2.7in; border:1px solid var(--rule); background-color:var(--bg); background-image:repeating-linear-gradient(135deg, var(--faint) 0, var(--faint) 1px, transparent 1px, transparent 11px); display:flex; align-items:center; justify-content:center;">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:8pt; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); background:var(--bg); padding:5pt 9pt; border:1px solid var(--rule);">[ {{ item.caption }} ]</span>
+        </div>
+      </div>
+    </section>
+  </sc-for>
+
+  <!-- Reads -->
+  <section style="box-sizing:border-box; width:8.5in; padding:0.82in 0.86in;">
+    <div style="font-family:'IBM Plex Mono',monospace; font-size:8.5pt; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted);">What I’m reading</div>
+    <h2 style="font-size:30pt; font-weight:400; letter-spacing:-0.02em; margin:8pt 0 22pt;">Reads</h2>
+    <div style="border-bottom:1px solid var(--rule);">
+      <sc-for list="{{ reads }}" as="r" hint-placeholder-count="5">
+        <article style="padding:17pt 0; border-top:1px solid var(--rule);">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:16pt;">
+            <span style="font-size:13pt; font-weight:500; letter-spacing:-0.01em;">{{ r.title }}</span>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:8pt; color:var(--muted); white-space:nowrap;">{{ r.year }}</span>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:8pt; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-top:6pt;">{{ r.meta }}<span style="margin-left:8pt; letter-spacing:0.16em; color:var(--ink);">{{ r.stars }}</span></div>
+          <p style="font-size:10.5pt; color:var(--muted); line-height:1.75; margin:8pt 0 0;">{{ r.note }}</p>
+        </article>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- Résumé (white) -->
+  <section style="box-sizing:border-box; width:8.5in; min-height:11in; background:#fff; color:#1f1c18; font-family:'IBM Plex Mono',monospace; padding:0.7in 0.66in; font-size:10pt; line-height:1.5;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:20pt; border-bottom:2px solid #1f1c18; padding-bottom:11pt;">
+      <div>
+        <div style="font-size:23pt; font-weight:700; letter-spacing:-0.01em; line-height:1;">Riley Smith</div>
+        <div style="font-size:9.5pt; color:#6a6155; letter-spacing:0.18em; text-transform:uppercase; margin-top:6pt;">Software developer</div>
+      </div>
+      <div style="text-align:right; font-size:8.5pt; color:#6a6155; line-height:1.75; white-space:nowrap;">{{ emailText }}<br>github.com/rileysmith<br>Oakland, CA</div>
+    </div>
+    <div style="font-size:8.5pt; letter-spacing:0.2em; text-transform:uppercase; color:#1f1c18; border-bottom:1px solid #d3ccbf; padding-bottom:3pt; margin:18pt 0 9pt; font-weight:700;">Summary</div>
+    <p style="margin:0; font-size:9.5pt; line-height:1.6; color:#37322b;">Software developer with eight years across payments infrastructure and developer tools. I specialise in the parts other people would rather not own — data integrity, sync, and the systems that have to be correct at 3am. Currently independent.</p>
+    <div style="font-size:8.5pt; letter-spacing:0.2em; text-transform:uppercase; color:#1f1c18; border-bottom:1px solid #d3ccbf; padding-bottom:3pt; margin:18pt 0 10pt; font-weight:700;">Experience</div>
+    <sc-for list="{{ rexp }}" as="exp" hint-placeholder-count="3">
+      <div style="margin-bottom:12pt; break-inside:avoid;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:14pt;">
+          <span style="font-size:10.5pt;"><span style="font-weight:700;">{{ exp.role }}</span><span style="color:#6a6155;"> — {{ exp.org }}</span></span>
+          <span style="font-size:8.5pt; color:#6a6155; white-space:nowrap;">{{ exp.dates }}</span>
+        </div>
+        <ul style="list-style:none; margin:6pt 0 0; padding:0;">
+          <sc-for list="{{ exp.bullets }}" as="b" hint-placeholder-count="2">
+            <li style="font-size:9.5pt; line-height:1.55; margin-bottom:3pt; color:#37322b; padding-left:13pt; position:relative;"><span style="position:absolute; left:0; color:#9a9080;">—</span>{{ b }}</li>
+          </sc-for>
+        </ul>
+      </div>
+    </sc-for>
+    <div style="font-size:8.5pt; letter-spacing:0.2em; text-transform:uppercase; color:#1f1c18; border-bottom:1px solid #d3ccbf; padding-bottom:3pt; margin:18pt 0 9pt; font-weight:700;">Selected projects</div>
+    <sc-for list="{{ rprojects }}" as="rp" hint-placeholder-count="3">
+      <div style="display:flex; justify-content:space-between; gap:14pt; margin-bottom:6pt;">
+        <span style="font-size:9.5pt; line-height:1.5;"><span style="font-weight:700;">{{ rp.title }}</span><span style="color:#6a6155;"> — {{ rp.blurb }}</span></span>
+        <span style="font-size:8.5pt; color:#6a6155; white-space:nowrap;">{{ rp.year }}</span>
+      </div>
+    </sc-for>
+    <div style="font-size:8.5pt; letter-spacing:0.2em; text-transform:uppercase; color:#1f1c18; border-bottom:1px solid #d3ccbf; padding-bottom:3pt; margin:18pt 0 9pt; font-weight:700;">Skills</div>
+    <sc-for list="{{ rskills }}" as="sk" hint-placeholder-count="3">
+      <div style="display:grid; grid-template-columns:84pt 1fr; gap:12pt; margin-bottom:5pt;">
+        <span style="font-size:8.5pt; letter-spacing:0.1em; text-transform:uppercase; color:#6a6155; padding-top:1pt;">{{ sk.label }}</span>
+        <span style="font-size:9.5pt;">{{ sk.value }}</span>
+      </div>
+    </sc-for>
+    <div style="font-size:8.5pt; letter-spacing:0.2em; text-transform:uppercase; color:#1f1c18; border-bottom:1px solid #d3ccbf; padding-bottom:3pt; margin:18pt 0 9pt; font-weight:700;">Education</div>
+    <div style="display:flex; justify-content:space-between; gap:14pt;">
+      <span style="font-size:9.5pt;"><span style="font-weight:700;">B.S. Computer Science</span><span style="color:#6a6155;"> — University of California, Davis</span></span>
+      <span style="font-size:8.5pt; color:#6a6155;">2019</span>
+    </div>
+  </section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;clay&quot;,&quot;stone&quot;,&quot;taupe&quot;],&quot;default&quot;:&quot;clay&quot;,&quot;tsType&quot;:&quot;'clay'|'sand'|'ochre'|'stone'|'taupe'|'ash'&quot;},&quot;font&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;newsreader&quot;,&quot;garamond&quot;,&quot;spectral&quot;,&quot;lora&quot;,&quot;cormorant&quot;,&quot;source&quot;],&quot;default&quot;:&quot;newsreader&quot;,&quot;tsType&quot;:&quot;'newsreader'|'garamond'|'spectral'|'lora'|'cormorant'|'source'&quot;},&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;none&quot;,&quot;oxblood&quot;,&quot;sienna&quot;,&quot;sage&quot;],&quot;default&quot;:&quot;none&quot;,&quot;tsType&quot;:&quot;'none'|'oxblood'|'sienna'|'sage'&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.rootRef = React.createRef();
+    this.state = {
+      route: 'home',
+      showPrintHint: false,
+      theme: props.theme || 'clay',
+      font: props.font || 'newsreader',
+      accent: props.accent || 'none',
+      details: { smallCaps: false, dropCap: false, figures: false, italic: false },
+      activeProject: 'halyard',
+    };
+    this.THEMES = {
+      clay:  { bg:'#e2dcd2', ink:'#3d3730', muted:'#7e766a', rule:'#c8c0b4', faint:'#d7d0c5' },
+      sand:  { bg:'#e8e1d4', ink:'#423b2f', muted:'#847a68', rule:'#cdc4b2', faint:'#ddd6c7' },
+      ochre: { bg:'#e6dcc6', ink:'#463d2b', muted:'#897c60', rule:'#ccbd9f', faint:'#dbd1ba' },
+      stone: { bg:'#dcd8cf', ink:'#3a362f', muted:'#7b746a', rule:'#c4beb1', faint:'#d2cdc3' },
+      taupe: { bg:'#ddd6ca', ink:'#3f382f', muted:'#7f7668', rule:'#c6beb0', faint:'#d3cbbe' },
+      ash:   { bg:'#e7e3db', ink:'#3c3833', muted:'#817b71', rule:'#ccc6bc', faint:'#dbd6cd' },
+    };
+    this.FONTS = {
+      newsreader: "'Newsreader', Georgia, serif",
+      garamond:   "'EB Garamond', Georgia, serif",
+      spectral:   "'Spectral', Georgia, serif",
+      lora:       "'Lora', Georgia, serif",
+      cormorant:  "'Cormorant Garamond', Georgia, serif",
+      source:     "'Source Serif 4', Georgia, serif",
+    };
+    this.ACCENTS = { none: null, oxblood: '#7a3a33', sienna: '#9a5a39', sage: '#5f6a4f' };
+    this.SHORTS = {
+      halyard: 'Local-first sync engine',
+      plainledger: 'Plain-text accounting CLI',
+      quietnet: 'Server-less file transfer',
+      marginalia: 'Web annotation layer',
+      tinytype: 'Monospace type-setting library',
+      driftwood: 'One-file site generator',
+    };
+    this.PROJECTS = [
+      {
+        slug:'halyard', title:'Halyard',
+        blurb:'A local-first sync engine. A CRDT core over SQLite that runs the same in the browser and on the edge.',
+        tags:['rust','wasm','crdt'], date:'2025—', role:'Solo',
+        sourceUrl:'https://github.com/rileysmith/halyard', demoUrl:null,
+        caption:'Halyard — operation-log inspector',
+        overview:[
+          'Halyard started as a frustration: every app I built needed sync, and every sync layer I reached for assumed a server I didn’t want to run. Halyard is the opposite — a conflict-free replicated data store that treats the network as optional and the local copy as the source of truth.',
+          'The core is a small Rust library compiled to WASM. It keeps an append-only log of operations, merges them deterministically, and exposes a plain key–value and document API on top. Storage is just SQLite, so the same database file works on a laptop, a phone, and a tiny edge worker.'
+        ],
+        bullets:[
+          'Deterministic CRDT merge with causal ordering and tombstone GC',
+          'SQLite-backed storage, identical API in the browser (WASM) and native',
+          'Sub-millisecond local reads; sync is a background reconciliation, never a blocker'
+        ]
+      },
+      {
+        slug:'plainledger', title:'Plainledger',
+        blurb:'Double-entry accounting in plain text, from the command line. Reports, budgets, and a small query language for your money.',
+        tags:['go','cli','finance'], date:'2024—25', role:'Solo',
+        sourceUrl:'https://github.com/rileysmith/plainledger', demoUrl:null,
+        caption:'Plainledger — monthly report',
+        overview:[
+          'Plainledger is what happens when you decide your accounting should outlive any app. Everything is plain text — human-readable, diff-able, and yours. The CLI parses it, validates that the books balance, and gets out of the way.',
+          'On top of the ledger sits a small query language for slicing your money by account, tag, or time, plus budgets that warn before you overspend rather than after.'
+        ],
+        bullets:[
+          'Plain-text, double-entry ledger that version-controls cleanly',
+          'A small query language for reports, budgets, and forecasts',
+          'Zero lock-in — your data is a text file you can read without the tool'
+        ]
+      },
+      {
+        slug:'quietnet', title:'Quietnet',
+        blurb:'Peer-to-peer file transfer with no server in the middle. One link, end-to-end encrypted, gone when you close the tab.',
+        tags:['typescript','webrtc'], date:'2024', role:'Solo',
+        sourceUrl:'https://github.com/rileysmith/quietnet', demoUrl:'https://quietnet.app',
+        caption:'Quietnet — transfer view',
+        overview:[
+          'Quietnet moves files between two browsers with nothing in between. You open a link, the other side opens it, and a channel forms directly between you — the file never touches a server.',
+          'Everything is encrypted end-to-end and exists only for the life of the tab. Close it and the transfer is gone, by design.'
+        ],
+        bullets:[
+          'WebRTC data channels, no relay server for the payload',
+          'End-to-end encrypted; keys never leave the browser',
+          'Ephemeral by default — nothing stored, nothing logged'
+        ]
+      },
+      {
+        slug:'marginalia', title:'Marginalia',
+        blurb:'An annotation layer for everything you read on the web. Highlights sync; notes export straight to Markdown.',
+        tags:['typescript','browser-ext'], date:'2023—24', role:'Solo',
+        sourceUrl:'https://github.com/rileysmith/marginalia', demoUrl:null,
+        caption:'Marginalia — highlight export',
+        overview:[
+          'Marginalia is a thin layer over the web for people who read closely. Highlight anything, leave a note, and it follows the page wherever you find it again.',
+          'Your annotations are yours: they sync across devices and export straight to Markdown, so your reading notes live in the same place as the rest of your writing.'
+        ],
+        bullets:[
+          'Highlights and notes anchored to text, resilient to page changes',
+          'Sync across devices; export to plain Markdown',
+          'Keyboard-first, no account required to start'
+        ]
+      },
+      {
+        slug:'tinytype', title:'Tinytype',
+        blurb:'A 4 kB type-setting library for terminal-style web interfaces. Monospace grids, done right.',
+        tags:['css','typography'], date:'2023', role:'Solo',
+        sourceUrl:'https://github.com/rileysmith/tinytype', demoUrl:null,
+        caption:'Tinytype — grid specimen',
+        overview:[
+          'Tinytype is a 4 kB library for building terminal-style web interfaces that actually align. It sets text on a strict monospace grid so columns line up the way they would in a real terminal.',
+          'It started as a dependency I kept rewriting for my own projects. Eventually it was cleaner to make it a real, tiny, dependency-free thing.'
+        ],
+        bullets:[
+          'Strict monospace baseline grid in ~4 kB, no dependencies',
+          'Box-drawing helpers, columns, and rules that align perfectly',
+          'Works as plain CSS or with a few optional helpers'
+        ]
+      },
+      {
+        slug:'driftwood', title:'Driftwood',
+        blurb:'A static site generator that fits in one file. Markdown in, a site out, nothing to configure.',
+        tags:['go','ssg'], date:'2022', role:'Solo',
+        sourceUrl:'https://github.com/rileysmith/driftwood', demoUrl:null,
+        caption:'Driftwood — build output',
+        overview:[
+          'Driftwood is a static site generator that fits in a single file. Point it at a folder of Markdown and it gives you a site — no config, no plugins, no build graph to reason about.',
+          'It is deliberately small and finished. It does one thing, it is easy to read end to end, and it will still run in five years.'
+        ],
+        bullets:[
+          'One file, no configuration, no dependencies to speak of',
+          'Markdown in, a fast static site out',
+          'Small enough to read and trust in an afternoon'
+        ]
+      },
+    ];
+    this.READS = [
+      { title:'Designing Data-Intensive Applications', author:'Martin Kleppmann', type:'Book', rating:5, year:'2026',
+        note:'The book I re-read the most. The chapters on replication and consensus basically designed Halyard for me. Dense, but every page earns its place.' },
+      { title:'Local-First Software', author:'Ink & Switch', type:'Essay', rating:0, year:'2025',
+        note:'The manifesto behind half of what I work on. Seven ideals for software that keeps working when the network doesn’t — and a reason to take CRDTs seriously.' },
+      { title:'The Soul of a New Machine', author:'Tracy Kidder', type:'Book', rating:4, year:'2025',
+        note:'A reminder that shipping hardware in the ’80s was its own kind of heroic. Holds up as a story about small teams under impossible pressure.' },
+      { title:'A Pattern Language', author:'Christopher Alexander', type:'Book', rating:5, year:'2024',
+        note:'Ostensibly about buildings. Actually about how to think in systems of small, composable decisions. I steal from it constantly.' },
+      { title:'The Mythical Man-Month', author:'Fred Brooks', type:'Book', rating:4, year:'2024',
+        note:'Old, occasionally dated, still right about the things that matter. Adding people to a late project makes it later — and a dozen other truths.' },
+    ];
+    this.REXP = [
+      { role:'Independent Software Developer', org:'Self-employed', dates:'2024 — Present', bullets:[
+        'Build developer tools and local-first systems for small teams and solo makers, with clients in fintech and digital publishing.',
+        'Shipped Halyard, an open-source CRDT sync engine now running in several production apps.'
+      ]},
+      { role:'Senior Engineer', org:'Tessellate (payments infrastructure)', dates:'2021 — 2024', bullets:[
+        'Owned the double-entry ledger service handling ~2M transactions a day; led a rewrite that cut reconciliation from hours to minutes.',
+        'Designed the idempotency and audit layer that passed three external compliance reviews without a finding.',
+        'Mentored four engineers and ran the internal systems-design reading group.'
+      ]},
+      { role:'Software Engineer', org:'Northbeam', dates:'2019 — 2021', bullets:[
+        'Grew the internal metrics platform from a prototype to company-wide use.',
+        'Introduced plain-text, reviewable infrastructure config; halved deploy incidents.'
+      ]},
+    ];
+    this.RSKILLS = [
+      { label:'Languages', value:'Rust · Go · TypeScript · SQL' },
+      { label:'Systems', value:'SQLite · PostgreSQL · WebRTC · WebAssembly' },
+      { label:'Focus', value:'Distributed systems · Local-first · Developer tooling' },
+    ];
+  }
+
+  applySettings() {
+    if (typeof document === 'undefined') return;
+    const t = this.THEMES[this.state.theme] || this.THEMES.clay;
+    const f = this.FONTS[this.state.font] || this.FONTS.newsreader;
+    const acc = this.ACCENTS[this.state.accent];
+    const el = document.documentElement;
+    for (const k in t) el.style.setProperty('--' + k, t[k]);
+    el.style.setProperty('--accent', acc || t.ink);
+    el.style.setProperty('--font', f);
+    const d = this.state.details;
+    el.setAttribute('data-smallcaps', d.smallCaps ? '1' : '0');
+    el.setAttribute('data-dropcap', d.dropCap ? '1' : '0');
+    el.setAttribute('data-figs', d.figures ? '1' : '0');
+    el.setAttribute('data-italic', d.italic ? '1' : '0');
+  }
+  componentDidMount() { this.applySettings(); }
+  componentDidUpdate(prevProps) {
+    if (this.props.theme && this.props.theme !== prevProps.theme) this.setState({ theme: this.props.theme });
+    if (this.props.font && this.props.font !== prevProps.font) this.setState({ font: this.props.font });
+    if (this.props.accent && this.props.accent !== prevProps.accent) this.setState({ accent: this.props.accent });
+    this.applySettings();
+  }
+
+  go(route, slug) {
+    this.setState({ route, activeProject: slug || this.state.activeProject });
+    if (typeof window !== 'undefined') window.scrollTo(0, 0);
+  }
+
+  printAs(mode) {
+    if (typeof document === 'undefined') return;
+    const el = document.documentElement;
+    el.setAttribute('data-print', mode);
+    const clear = () => { el.removeAttribute('data-print'); window.removeEventListener('afterprint', clear); };
+    window.addEventListener('afterprint', clear);
+    setTimeout(() => { window.print(); }, 60);
+  }
+
+  renderVals() {
+    const { route, theme, font, accent, details } = this.state;
+    const e1 = 'riley', e2 = 'rileysmith.dev';
+
+    const projects = this.PROJECTS.map((p, i) => ({
+      ...p,
+      pno: String(i + 1).padStart(2, '0'),
+      short: this.SHORTS[p.slug] || '',
+      metaLine: p.role + ' · ' + p.date + ' · ' + p.tags.join(' · '),
+      hasSource: !!p.sourceUrl,
+      hasDemo: !!p.demoUrl,
+      open: () => this.go('project', p.slug),
+    }));
+    const proj = projects.find((p) => p.slug === this.state.activeProject) || projects[0];
+
+    const reads = this.READS.map((r) => ({
+      ...r,
+      meta: r.author + ' · ' + r.type,
+      stars: r.rating ? '★★★★★☆☆☆☆☆'.slice(5 - r.rating, 10 - r.rating) : '',
+    }));
+
+    const rprojects = [
+      { title:'Halyard', blurb:'Local-first CRDT sync engine (Rust / WASM / SQLite)', year:'2025—' },
+      { title:'Plainledger', blurb:'Plain-text double-entry accounting CLI (Go)', year:'2024—25' },
+      { title:'Quietnet', blurb:'Server-less peer-to-peer file transfer (WebRTC)', year:'2024' },
+    ];
+
+    const navDef = [
+      { label:'About', route:'home' },
+      { label:'Projects', route:'projects' },
+      { label:'Reads', route:'reads' },
+      { label:'Resume', route:'resume' },
+    ];
+    const navActive = (route === 'project') ? 'projects' : route;
+    const nav = navDef.map((n, i) => {
+      const active = n.route === navActive;
+      return {
+        label: n.label,
+        showDivider: i > 0,
+        go: () => this.go(n.route),
+        style: {
+          cursor:'pointer', whiteSpace:'nowrap', paddingBottom:'3px',
+          color: active ? 'var(--accent)' : 'var(--muted)',
+          borderBottom: active ? '1px solid var(--accent)' : '1px solid transparent',
+          transition:'color .2s ease',
+        },
+      };
+    });
+
+    const mkBtn = (active) => ({
+      font:'inherit', fontSize:'8.5px', letterSpacing:'0.08em', textTransform:'uppercase',
+      cursor:'pointer', padding:'4px 7px', transition:'all .15s ease', lineHeight:'1.2',
+      background: active ? 'var(--ink)' : 'transparent',
+      color: active ? 'var(--bg)' : 'var(--muted)',
+      border: active ? '1px solid var(--ink)' : '1px solid var(--rule)',
+    });
+    const tones = [
+      { key:'clay', label:'Clay' }, { key:'stone', label:'Stone' }, { key:'taupe', label:'Taupe' },
+    ].map((x) => ({ label: x.label, go: () => this.setState({ theme: x.key }), style: mkBtn(x.key === theme) }));
+    const fonts = [
+      { key:'newsreader', label:'News' }, { key:'garamond', label:'Garamond' }, { key:'spectral', label:'Spectral' },
+      { key:'lora', label:'Lora' }, { key:'cormorant', label:'Cormorant' }, { key:'source', label:'Source' },
+    ].map((x) => ({ label: x.label, go: () => this.setState({ font: x.key }), style: mkBtn(x.key === font) }));
+    const accents = [
+      { key:'none', label:'None' }, { key:'oxblood', label:'Oxblood' }, { key:'sienna', label:'Sienna' }, { key:'sage', label:'Sage' },
+    ].map((x) => ({ label: x.label, go: () => this.setState({ accent: x.key }), style: mkBtn(x.key === accent) }));
+    const detailControls = [
+      { key:'smallCaps', label:'Sm caps' }, { key:'dropCap', label:'Drop cap' }, { key:'figures', label:'Figures' }, { key:'italic', label:'Italic' },
+    ].map((x) => ({
+      label: x.label,
+      go: () => this.setState((s) => ({ details: { ...s.details, [x.key]: !s.details[x.key] } })),
+      style: mkBtn(!!details[x.key]),
+    }));
+
+    return {
+      route, theme, font, accent,
+      emailText: e1 + '@' + e2,
+      isHome: route === 'home',
+      isProjects: route === 'projects',
+      isProject: route === 'project',
+      isReads: route === 'reads',
+      isResume: route === 'resume',
+      goProjects: () => this.go('projects'),
+      printResume: () => this.printAs('resume'),
+      printFull: () => this.printAs('full'),
+      showPrintHint: this.state.showPrintHint,
+      openPrintHint: () => this.setState({ showPrintHint: true }),
+      closePrintHint: () => this.setState({ showPrintHint: false }),
+      stop: (e) => { if (e && e.stopPropagation) e.stopPropagation(); },
+      confirmPrintFull: () => { this.setState({ showPrintHint: false }); setTimeout(() => this.printAs('full'), 80); },
+      nav, tones, fonts, accents, details: detailControls,
+      projects, proj, reads,
+      rexp: this.REXP, rprojects, rskills: this.RSKILLS,
+      rootRef: this.rootRef,
+    };
+  }
+}
+</script>
+</body>
+</html>
