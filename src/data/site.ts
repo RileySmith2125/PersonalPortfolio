@@ -2,7 +2,7 @@
 export const site = {
   name: 'Riley Smith',
   tagline: 'Software developer',
-  bio: "This portfolio is a chance for me to highlight interests and projects that you won't find on my resume. Machine learning, geopolitics, and football are a couple things you'll find. Enjoy!",
+  bio: "This portfolio is where I highlight interests and projects that you won't find on my resume. Machine learning, geopolitics, and football are a couple things you'll find. Enjoy!",
   location: 'Oakland, CA',
   email: 'rileyk2x@gmail.com',
   github: 'https://github.com/RileySmith2125',

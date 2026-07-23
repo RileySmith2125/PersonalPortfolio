@@ -1,6 +1,6 @@
 ---
-title: Halyard
-description: Local-first sync engine
+title: Vantage
+description: Map of geopolitics
 role: Solo
 startDate: 2025-01-01
 tags: [rust, wasm, crdt]

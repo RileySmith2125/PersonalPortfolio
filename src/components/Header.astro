@@ -9,9 +9,10 @@ const nav = [
 ];
 
 const current = Astro.url.pathname.replace(/\/$/, '') || '/';
+const homeHref = url('/').replace(/\/$/, '') || '/';
 const isCurrent = (href: string) => {
   const base = href.replace(/\/$/, '') || '/';
-  if (base === url('/')) return current === base;
+  if (base === homeHref) return current === base;
   return current === base || current.startsWith(`${base}/`);
 };
 ---
