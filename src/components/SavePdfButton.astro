@@ -1,0 +1,177 @@
+---
+---
+
+<button id="save-pdf-btn" data-print-hide title="Download the whole portfolio as a multi-page PDF">
+  Save as PDF
+</button>
+
+<div id="print-hint-backdrop" data-print-hide>
+  <div id="print-hint-modal">
+    <div class="eyebrow">Before you save</div>
+    <h2>Turn on background graphics</h2>
+    <p>
+      In the print window, open <span class="ink">More settings</span> and tick
+      <span class="ink">Background graphics</span>. Without it, the pages print on plain
+      white and lose the clay tone and rules.
+    </p>
+    <div class="chip">
+      <span class="check">☑</span>
+      <span>Background graphics</span>
+    </div>
+    <div class="actions">
+      <button id="print-hint-cancel">Cancel</button>
+      <button id="print-hint-continue">Continue</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const openBtn = document.getElementById('save-pdf-btn');
+  const backdrop = document.getElementById('print-hint-backdrop');
+  const modal = document.getElementById('print-hint-modal');
+  const cancelBtn = document.getElementById('print-hint-cancel');
+  const continueBtn = document.getElementById('print-hint-continue');
+
+  const openModal = () => backdrop?.classList.add('open');
+  const closeModal = () => backdrop?.classList.remove('open');
+
+  openBtn?.addEventListener('click', openModal);
+  backdrop?.addEventListener('click', closeModal);
+  modal?.addEventListener('click', (e) => e.stopPropagation());
+  cancelBtn?.addEventListener('click', closeModal);
+
+  continueBtn?.addEventListener('click', () => {
+    closeModal();
+    const el = document.documentElement;
+    el.setAttribute('data-print-full', '');
+    const clear = () => {
+      el.removeAttribute('data-print-full');
+      window.removeEventListener('afterprint', clear);
+    };
+    window.addEventListener('afterprint', clear);
+    setTimeout(() => window.print(), 80);
+  });
+</script>
+
+<style>
+  #save-pdf-btn {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 40;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: var(--ink);
+    color: var(--bg);
+    border: none;
+    padding: 12px 17px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.16);
+  }
+
+  #print-hint-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: rgba(31, 28, 24, 0.32);
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  #print-hint-backdrop.open {
+    display: flex;
+  }
+
+  #print-hint-modal {
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    max-width: 412px;
+    width: 100%;
+    padding: 34px 34px 28px;
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.24);
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  #print-hint-modal h2 {
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    margin: 14px 0 0;
+    line-height: 1.2;
+  }
+
+  #print-hint-modal p {
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: var(--muted);
+    margin: 16px 0 0;
+  }
+
+  #print-hint-modal p .ink {
+    color: var(--ink);
+  }
+
+  .chip {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin-top: 18px;
+    padding: 13px 15px;
+    border: 1px solid var(--rule);
+    background: var(--faint);
+  }
+
+  .chip .check {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .chip span:last-child {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+  }
+
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
+    margin-top: 26px;
+  }
+
+  .actions button {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  #print-hint-cancel {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--rule);
+    padding: 10px 15px;
+  }
+
+  #print-hint-continue {
+    background: var(--ink);
+    color: var(--bg);
+    border: none;
+    padding: 10px 16px;
+  }
+</style>

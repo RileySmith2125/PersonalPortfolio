@@ -1,0 +1,337 @@
+---
+import { getCollection, render } from 'astro:content';
+import { site } from '../data/site';
+import { formatProjectDate } from '../utils/formatProjectDate';
+import ResumeContent from './ResumeContent.astro';
+
+const projects = (await getCollection('projects', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf()
+);
+const projectsWithBody = await Promise.all(
+  projects.map(async (p) => ({ data: p.data, Content: (await render(p)).Content }))
+);
+
+const reads = (await getCollection('reads')).sort(
+  (a, b) => b.data.dateRead.valueOf() - a.data.dateRead.valueOf()
+);
+const readsWithBody = await Promise.all(
+  reads.map(async (r) => ({ data: r.data, Content: (await render(r)).Content }))
+);
+
+const githubHandle = site.github.replace(/^https?:\/\//, '');
+const year = new Date().getFullYear();
+---
+
+<div data-print-doc>
+  <!-- Cover / About -->
+  <section class="cover">
+    <div class="eyebrow">Portfolio · {site.name} · {year}</div>
+    <div class="cover-name">{site.name}</div>
+    <p class="cover-bio">{site.bio}</p>
+    <div class="cover-contact">{site.email} · {githubHandle}</div>
+  </section>
+
+  <!-- Projects index -->
+  <section class="doc-page">
+    <div class="eyebrow">Index</div>
+    <h2>Projects</h2>
+    <div class="projects-grid">
+      {projectsWithBody.map(({ data }) => (
+        <div>
+          <div class="hatch small">
+            <span class="chip">{data.title}</span>
+          </div>
+          <div class="card-title">{data.title}</div>
+          <div class="card-desc">{data.description}</div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- One page per project -->
+  {projectsWithBody.map(({ data, Content }, i) => (
+    <section class="doc-page">
+      <div class="eyebrow">Project {String(i + 1).padStart(2, '0')}</div>
+      <h2>{data.title}</h2>
+      <div class="meta">{data.role} · {formatProjectDate(data.startDate, data.endDate)} · {data.tags.join(' · ')}</div>
+      <div class="overview">
+        <Content />
+      </div>
+      <ul class="bullets">
+        {data.bullets.map((b) => <li>{b}</li>)}
+      </ul>
+      <div class="figure-wrap">
+        <div class="hatch large">
+          <span class="chip">[ {data.caption || data.title} ]</span>
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <!-- Reads -->
+  <section class="doc-page">
+    <div class="eyebrow">What I'm reading</div>
+    <h2>Reads</h2>
+    <div class="reads-list">
+      {readsWithBody.map(({ data, Content }) => (
+        <article class="read-row">
+          <div class="read-head">
+            <span class="read-title">{data.title}</span>
+            <span class="read-year">{data.dateRead.getUTCFullYear()}</span>
+          </div>
+          <div class="read-meta">
+            {data.author} · {data.type}
+            {data.rating ? <span class="stars">{'★'.repeat(data.rating)}{'☆'.repeat(5 - data.rating)}</span> : null}
+          </div>
+          <div class="read-note"><Content /></div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- Résumé (white) -->
+  <section class="resume-doc-page">
+    <ResumeContent />
+  </section>
+</div>
+
+<style>
+  [data-print-doc] {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-serif);
+  }
+
+  section {
+    box-sizing: border-box;
+    width: 8.5in;
+  }
+
+  .cover {
+    min-height: 10.7in;
+    padding: 0.9in;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .cover .eyebrow {
+    margin-bottom: 26pt;
+  }
+
+  .cover-name {
+    font-size: 44pt;
+    font-weight: 400;
+    letter-spacing: -0.025em;
+    line-height: 1.04;
+  }
+
+  .cover-bio {
+    font-size: 13pt;
+    line-height: 1.9;
+    color: var(--muted);
+    max-width: 30em;
+    margin: 24pt 0 0;
+  }
+
+  .cover-contact {
+    margin-top: 40pt;
+    font-family: var(--font-mono);
+    font-size: 8pt;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 8.5pt;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .doc-page {
+    padding: 0.82in 0.86in;
+  }
+
+  .doc-page h2 {
+    font-size: 30pt;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin: 8pt 0 26pt;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30pt 26pt;
+  }
+
+  .hatch {
+    position: relative;
+    border: 1px solid var(--rule);
+    background-color: var(--bg);
+    background-image: repeating-linear-gradient(
+      135deg,
+      var(--faint) 0,
+      var(--faint) 1px,
+      transparent 1px,
+      transparent 11px
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hatch.small {
+    height: 1.5in;
+  }
+
+  .hatch.large {
+    height: 2.7in;
+  }
+
+  .hatch .chip {
+    font-family: var(--font-mono);
+    font-size: 7.5pt;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--bg);
+    padding: 4pt 7pt;
+    border: 1px solid var(--rule);
+  }
+
+  .card-title {
+    font-size: 14pt;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-top: 11pt;
+  }
+
+  .card-desc {
+    font-size: 10.5pt;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-top: 4pt;
+  }
+
+  .meta {
+    font-family: var(--font-mono);
+    font-size: 8.5pt;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .overview {
+    margin-top: 26pt;
+  }
+
+  .overview :global(p) {
+    font-size: 12pt;
+    line-height: 1.95;
+    margin: 0 0 16pt;
+  }
+
+  .bullets {
+    list-style: none;
+    padding: 0;
+    margin: 14pt 0 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .bullets li {
+    font-size: 10.5pt;
+    color: var(--muted);
+    line-height: 1.6;
+    padding: 10pt 0 10pt 18pt;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+
+  .bullets li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--ink);
+  }
+
+  .figure-wrap {
+    margin-top: 30pt;
+  }
+
+  .doc-page .hatch .chip {
+    font-size: 8pt;
+    padding: 5pt 9pt;
+  }
+
+  .reads-list {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .read-row {
+    padding: 17pt 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .read-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16pt;
+  }
+
+  .read-title {
+    font-size: 13pt;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .read-year {
+    font-family: var(--font-mono);
+    font-size: 8pt;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .read-meta {
+    font-family: var(--font-mono);
+    font-size: 8pt;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 6pt;
+  }
+
+  .read-meta .stars {
+    margin-left: 8pt;
+    letter-spacing: 0.16em;
+    color: var(--ink);
+  }
+
+  .read-note {
+    font-size: 10.5pt;
+    color: var(--muted);
+    line-height: 1.75;
+    margin-top: 8pt;
+  }
+
+  .read-note :global(p) {
+    margin: 0;
+  }
+
+  .resume-doc-page {
+    min-height: 11in;
+    background: #fff;
+    color: #1f1c18;
+    font-family: var(--font-mono);
+    padding: 0.7in 0.66in;
+    font-size: 10pt;
+    line-height: 1.5;
+  }
+</style>

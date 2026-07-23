@@ -1,66 +1,39 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ProjectCard from '../components/ProjectCard.astro';
-import SocialLinks from '../components/SocialLinks.astro';
-import { site, url } from '../data/site';
-
-const featured = (
-  await getCollection('projects', ({ data }) => data.featured && !data.draft)
-).sort((a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf());
+import { site } from '../data/site';
 ---
 
 <BaseLayout>
-  <section class="hero">
+  <div class="about">
     <h1>{site.name}</h1>
-    <p class="tagline">{site.tagline}</p>
-    <p class="bio muted">{site.bio}</p>
-    <SocialLinks />
-  </section>
-
-  <section class="section">
-    <div class="section-head">
-      <h2>Featured projects</h2>
-      <a href={url('/projects')}>All projects →</a>
-    </div>
-    <div class="grid">
-      {featured.map((project) => <ProjectCard project={project} />)}
-    </div>
-  </section>
+    <p class="bio">{site.bio}</p>
+  </div>
 </BaseLayout>
 
 <style>
-  .hero {
-    padding-top: var(--space-5);
-  }
-
-  .tagline {
-    font-size: var(--text-lg);
-    color: var(--accent);
-    font-weight: 600;
-    margin: 0 0 var(--space-3);
-  }
-
-  .bio {
-    max-width: 38rem;
-    margin-bottom: var(--space-4);
-  }
-
-  .section-head {
+  .about {
+    min-height: calc(100vh - 68px);
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: var(--space-3);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 48px clamp(24px, 6vw, 40px) 96px;
   }
 
-  .section-head a {
-    font-size: var(--text-sm);
-    font-weight: 550;
+  h1 {
+    font-size: clamp(32px, 6.4vw, 74px);
+    font-weight: 400;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
     white-space: nowrap;
   }
 
-  .grid {
-    display: grid;
-    gap: var(--space-3);
+  .bio {
+    font-size: 14.5px;
+    line-height: 2;
+    color: var(--muted);
+    max-width: 48ch;
+    margin-top: 32px;
   }
 </style>

@@ -1,0 +1,61 @@
+---
+import { getCollection } from 'astro:content';
+import { site } from '../data/site';
+import { formatProjectDate } from '../utils/formatProjectDate';
+
+const featured = (
+  await getCollection('projects', ({ data }) => data.featured && !data.draft)
+).sort((a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf());
+
+const githubHandle = site.github.replace(/^https?:\/\//, '');
+---
+
+<div class="resume-header">
+  <div>
+    <div class="name">{site.name}</div>
+    <div class="tagline">{site.tagline}</div>
+  </div>
+  <div class="contact">
+    {site.email}<br />
+    {githubHandle}<br />
+    {site.location}
+  </div>
+</div>
+
+<div class="resume-label">Summary</div>
+<p class="resume-summary">{site.resumeSummary}</p>
+
+<div class="resume-label">Experience</div>
+{site.experience.map((exp) => (
+  <div class="resume-entry">
+    <div class="resume-entry-head">
+      <span class="title"><strong>{exp.role}</strong><span class="org"> — {exp.org}</span></span>
+      <span class="dates">{exp.dates}</span>
+    </div>
+    <ul class="resume-bullets">
+      {exp.bullets.map((b) => <li>{b}</li>)}
+    </ul>
+  </div>
+))}
+
+<div class="resume-label">Selected projects</div>
+{featured.map(({ data }) => (
+  <div class="resume-project-row">
+    <span class="title"><strong>{data.title}</strong><span class="blurb"> — {data.description}</span></span>
+    <span class="year">{formatProjectDate(data.startDate, data.endDate)}</span>
+  </div>
+))}
+
+<div class="resume-label">Skills</div>
+{site.skills.map((sk) => (
+  <div class="resume-skill-row">
+    <span class="label">{sk.label}</span>
+    <span class="value">{sk.value}</span>
+  </div>
+))}
+
+<div class="resume-label">Education</div>
+<div class="resume-project-row">
+  <span class="title"><strong>{site.education.degree}</strong><span class="blurb"> — {site.education.school}</span></span>
+  <span class="year">{site.education.year}</span>
+</div>

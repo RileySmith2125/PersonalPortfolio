@@ -1,10 +1,9 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { getCollection, render } from 'astro:content';
-import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Tag from '../../components/Tag.astro';
 import { url } from '../../data/site';
+import { formatProjectDate } from '../../utils/formatProjectDate';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects', ({ data }) => !data.draft);
@@ -19,73 +18,169 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const { title, description, startDate, endDate, tags, repoUrl, demoUrl, image } =
+const { title, description, role, startDate, endDate, tags, repoUrl, demoUrl, bullets, caption } =
   project.data;
 const { Content } = await render(project);
 
-const fmt = (d: Date) =>
-  d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+const metaLine = [role, formatProjectDate(startDate, endDate), tags.join(' · ')]
+  .filter(Boolean)
+  .join(' · ');
 ---
 
 <BaseLayout title={title} description={description}>
-  <a class="back muted" href={url('/projects')}>← All projects</a>
-  <article>
+  <div class="detail">
+    <a class="back" href={url('/projects')}>← Projects</a>
     <h1>{title}</h1>
-    <p class="meta muted">
-      {fmt(startDate)} – {endDate ? fmt(endDate) : 'Present'}
-    </p>
-    {tags.length > 0 && (
-      <div class="tags">
-        {tags.map((tag) => <Tag label={tag} />)}
+    <div class="meta">{metaLine}</div>
+    {(repoUrl || demoUrl) && (
+      <div class="links">
+        {repoUrl && (
+          <a href={repoUrl} target="_blank" rel="noopener noreferrer">Source ↗</a>
+        )}
+        {demoUrl && (
+          <a href={demoUrl} target="_blank" rel="noopener noreferrer">Live demo ↗</a>
+        )}
       </div>
     )}
-    <div class="links">
-      {repoUrl && (
-        <a href={repoUrl} target="_blank" rel="noopener noreferrer">View source ↗</a>
-      )}
-      {demoUrl && (
-        <a href={demoUrl} target="_blank" rel="noopener noreferrer">Live demo ↗</a>
-      )}
-    </div>
-    {image && <Image src={image} alt={title} width={1024} class="hero-img" />}
-    <div class="body">
+
+    <div class="overview">
       <Content />
     </div>
-  </article>
+
+    {bullets.length > 0 && (
+      <ul class="bullets">
+        {bullets.map((b) => <li>{b}</li>)}
+      </ul>
+    )}
+
+    <div class="figure-wrap">
+      <div class="figure">
+        <span class="chip">[ {caption || title} ]</span>
+      </div>
+      <div class="drop-label">Drop a screenshot here</div>
+    </div>
+  </div>
 </BaseLayout>
 
 <style>
+  .detail {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: clamp(52px, 9vh, 104px) clamp(24px, 6vw, 40px) 120px;
+  }
+
   .back {
-    font-size: var(--text-sm);
-    display: inline-block;
-    margin-bottom: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+  }
+
+  h1 {
+    font-size: clamp(30px, 4.6vw, 48px);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin: 20px 0 14px;
   }
 
   .meta {
-    font-size: var(--text-sm);
-    margin-top: calc(-1 * var(--space-2));
-  }
-
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    margin-bottom: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    line-height: 1.9;
   }
 
   .links {
     display: flex;
-    gap: var(--space-4);
-    margin-bottom: var(--space-4);
-    font-weight: 550;
-    font-size: var(--text-sm);
+    gap: 22px;
+    margin-top: 18px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
   }
 
-  .hero-img {
-    margin-bottom: var(--space-4);
+  .links a {
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 3px;
+    color: var(--accent);
   }
 
-  .body {
-    line-height: 1.7;
+  .overview {
+    margin-top: clamp(36px, 6vh, 60px);
+  }
+
+  .overview :global(p) {
+    font-size: 14px;
+    line-height: 2;
+    margin: 0 0 22px;
+  }
+
+  .bullets {
+    list-style: none;
+    padding: 0;
+    margin: 18px 0 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .bullets li {
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.65;
+    padding: 13px 0 13px 22px;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+
+  .bullets li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  .figure-wrap {
+    margin-top: clamp(36px, 6vh, 60px);
+  }
+
+  .figure {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--rule);
+    background-color: var(--bg);
+    background-image: repeating-linear-gradient(
+      135deg,
+      var(--faint) 0,
+      var(--faint) 1px,
+      transparent 1px,
+      transparent 11px
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .figure .chip {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--bg);
+    padding: 7px 12px;
+    border: 1px solid var(--rule);
+  }
+
+  .drop-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 12px;
   }
 </style>

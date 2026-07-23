@@ -1,7 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { Image } from 'astro:assets';
-import Tag from './Tag.astro';
 import { url } from '../data/site';
 
 interface Props {
@@ -9,57 +8,80 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const { title, description, startDate, endDate, tags, image } = project.data;
-
-const fmt = (d: Date) =>
-  d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-const dateRange = `${fmt(startDate)} – ${endDate ? fmt(endDate) : 'Present'}`;
+const { title, description, image } = project.data;
 ---
 
 <a class="card" href={url(`/projects/${project.id}`)}>
-  {image && <Image src={image} alt={title} width={640} class="thumb" />}
-  <div class="head">
-    <h3>{title}</h3>
-    <span class="dates muted">{dateRange}</span>
+  <div class="thumb">
+    {image ? (
+      <Image src={image} alt={title} width={640} />
+    ) : (
+      <span class="chip">{title}</span>
+    )}
   </div>
-  <p class="muted">{description}</p>
-  {tags.length > 0 && (
-    <div class="tags">
-      {tags.map((tag) => <Tag label={tag} />)}
-    </div>
-  )}
+  <div class="title">{title}</div>
+  <p class="desc">{description}</p>
 </a>
 
 <style>
+  .card {
+    display: block;
+    cursor: pointer;
+    padding: 12px;
+    margin: -12px;
+    transition: background 0.16s ease;
+  }
+
+  .card:hover {
+    background: var(--faint);
+  }
+
   .thumb {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border: 1px solid var(--rule);
+    background-color: var(--bg);
+    background-image: repeating-linear-gradient(
+      135deg,
+      var(--faint) 0,
+      var(--faint) 1px,
+      transparent 1px,
+      transparent 11px
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .thumb :global(img) {
     width: 100%;
+    height: 100%;
     object-fit: cover;
-    margin-bottom: var(--space-3);
   }
 
-  .head {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: var(--space-3);
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 8.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--bg);
+    padding: 5px 9px;
+    border: 1px solid var(--rule);
   }
 
-  .head h3 {
-    margin: 0;
+  .title {
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-top: 15px;
   }
 
-  .dates {
-    font-size: var(--text-sm);
-    white-space: nowrap;
-  }
-
-  p {
-    margin: var(--space-2) 0 var(--space-3);
-  }
-
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
+  .desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-top: 5px;
   }
 </style>

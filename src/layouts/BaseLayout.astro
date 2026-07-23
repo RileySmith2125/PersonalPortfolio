@@ -1,9 +1,13 @@
 ---
-import '@fontsource-variable/inter';
+import '@fontsource-variable/newsreader/standard.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/700.css';
 import '../styles/global.css';
+import '../styles/print.css';
 import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
+import SavePdfButton from '../components/SavePdfButton.astro';
+import PrintDocument from '../components/PrintDocument.astro';
 import { site, url } from '../data/site';
 
 interface Props {
@@ -33,6 +37,7 @@ const pageTitle = title ? `${title} · ${site.name}` : `${site.name} — ${site.
     <main>
       <slot />
     </main>
-    <Footer />
+    <SavePdfButton />
+    <PrintDocument />
   </body>
 </html>

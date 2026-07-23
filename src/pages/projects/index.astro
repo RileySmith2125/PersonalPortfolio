@@ -9,8 +9,6 @@ const projects = (await getCollection('projects', ({ data }) => !data.draft)).so
 ---
 
 <BaseLayout title="Projects" description="Personal projects and things I've built.">
-  <h1>Projects</h1>
-  <p class="muted">Things I've built, newest first.</p>
   <div class="grid">
     {projects.map((project) => <ProjectCard project={project} />)}
   </div>
@@ -18,8 +16,11 @@ const projects = (await getCollection('projects', ({ data }) => !data.draft)).so
 
 <style>
   .grid {
+    max-width: 940px;
+    margin: 0 auto;
+    padding: clamp(56px, 10vh, 116px) clamp(24px, 6vw, 44px) 120px;
     display: grid;
-    gap: var(--space-3);
-    margin-top: var(--space-4);
+    grid-template-columns: repeat(auto-fill, minmax(238px, 1fr));
+    gap: clamp(30px, 4vw, 46px) clamp(22px, 2.6vw, 30px);
   }
 </style>

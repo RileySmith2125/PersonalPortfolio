@@ -8,18 +8,52 @@ const reads = (await getCollection('reads')).sort(
 );
 ---
 
-<BaseLayout title="My Reads" description="Books and articles I've been reading.">
-  <h1>My Reads</h1>
-  <p class="muted">Books and articles I've found worthwhile, with notes.</p>
-  <div class="list">
-    {reads.map((read) => <ReadItem read={read} />)}
+<BaseLayout title="Reads" description="Books and essays I keep coming back to.">
+  <div class="page">
+    <div class="eyebrow">What I'm reading</div>
+    <h1>Reads</h1>
+    <p class="intro">
+      Books and essays I keep coming back to, with the notes that stuck. Mostly systems,
+      design, and the slow craft of building things that last.
+    </p>
+    <div class="list">
+      {reads.map((read) => <ReadItem read={read} />)}
+    </div>
   </div>
 </BaseLayout>
 
 <style>
+  .page {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: clamp(52px, 9vh, 104px) clamp(24px, 6vw, 40px) 120px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+  }
+
+  .intro {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.85;
+    max-width: 52ch;
+    margin: 0 0 44px;
+  }
+
   .list {
-    display: grid;
-    gap: var(--space-3);
-    margin-top: var(--space-4);
+    border-bottom: 1px solid var(--rule);
   }
 </style>
