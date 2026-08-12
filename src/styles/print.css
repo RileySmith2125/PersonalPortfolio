@@ -11,17 +11,10 @@
   max-width: 8.5in;
   margin: 0 auto 16px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: baseline;
   gap: 16px;
   font-family: var(--font-mono);
-}
-
-.resume-toolbar .label {
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--muted);
 }
 
 .resume-toolbar button {
