@@ -119,9 +119,8 @@ pre code {
 /* ---------------------------------------------------------------------------
    Print — shared across every page via BaseLayout.
    Two supported print paths:
-   1. Default (no JS involved, used by `npm run pdf` and a bare Ctrl+P on
-      /resume): chrome marked [data-print-hide] disappears, [data-print-doc]
-      stays hidden, and whatever is in <main> (the résumé paper on /resume)
+   1. Default (a bare Ctrl+P on any page): chrome marked [data-print-hide]
+      disappears, [data-print-doc] stays hidden, and whatever is in <main>
       prints as-is.
    2. Full export (SavePdfButton sets data-print-full on <html>): <main> is
       hidden instead and the [data-print-doc] twin (built once in BaseLayout)

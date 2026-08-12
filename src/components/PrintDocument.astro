@@ -2,7 +2,6 @@
 import { getCollection, render } from 'astro:content';
 import { site } from '../data/site';
 import { formatProjectDate } from '../utils/formatProjectDate';
-import ResumeContent from './ResumeContent.astro';
 
 const projects = (await getCollection('projects', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf()
@@ -87,11 +86,6 @@ const year = new Date().getFullYear();
         </article>
       ))}
     </div>
-  </section>
-
-  <!-- Résumé (white) -->
-  <section class="resume-doc-page">
-    <ResumeContent />
   </section>
 </div>
 
@@ -323,15 +317,5 @@ const year = new Date().getFullYear();
 
   .read-note :global(p) {
     margin: 0;
-  }
-
-  .resume-doc-page {
-    min-height: 11in;
-    background: #fff;
-    color: #1f1c18;
-    font-family: var(--font-mono);
-    padding: 0.7in 0.66in;
-    font-size: 10pt;
-    line-height: 1.5;
   }
 </style>

@@ -5,9 +5,6 @@ dist/
 # dependencies
 node_modules/
 
-# generated artifacts
-resume.pdf
-
 # logs
 npm-debug.log*
 

@@ -1,7 +1,7 @@
 # Personal Portfolio
 
-Astro-powered portfolio. Content lives in Markdown files; the site deploys to
-GitHub Pages and exports a PDF resume with one command.
+Astro-powered portfolio. Content lives in Markdown files and the site deploys to
+GitHub Pages.
 
 ## Commands
 
@@ -10,7 +10,6 @@ GitHub Pages and exports a PDF resume with one command.
 | `npm run dev`     | Dev server at http://localhost:4321/PersonalPortfolio/ |
 | `npm run build`   | Production build into `dist/`                     |
 | `npm run preview` | Serve the production build locally                |
-| `npm run pdf`     | Build + render the resume to `resume.pdf`         |
 
 ## Updating content
 
@@ -64,11 +63,19 @@ Your notes, rendered inline on the Reads page.
 
 Everything (name, bio, email, GitHub, LinkedIn) is in `src/data/site.ts`.
 
-## PDF resume
+## Resume
 
-`npm run pdf` builds the site and renders the `/resume` route to `resume.pdf`
-(project root, gitignored). The resume shows your bio plus **featured** projects.
-Preview it in the browser at `/resume` — it renders as a paper-style page.
+The resume is a PDF you supply, not generated content. Save it as
+**`public/resume.pdf`** and commit it — Astro copies `public/` to the site root,
+so it is served at `/PersonalPortfolio/resume.pdf`.
+
+The `/resume` page embeds that file with a Download PDF button above it. To
+update the resume, overwrite `public/resume.pdf` and push; nothing else changes.
+Keep the filename exactly `resume.pdf`, or update the path in
+`src/pages/resume.astro`.
+
+Browsers that won't render PDFs inline (notably iOS Safari) show a download link
+instead — the same fallback appears if the file is missing.
 
 ## Deploying (GitHub Pages)
 
@@ -85,4 +92,4 @@ Every push to `main` then deploys automatically to
 > **Base path caveat:** the site is served under `/PersonalPortfolio`. Always use
 > the `url()` helper from `src/data/site.ts` for internal links — never hardcode
 > `href="/..."`. If you rename the repo to `<you>.github.io`, remove `base` from
-> `astro.config.mjs` and set `BASE = ''` in `scripts/generate-pdf.mjs`.
+> `astro.config.mjs`.
