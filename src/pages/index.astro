@@ -18,7 +18,8 @@ import { site } from '../data/site';
     align-items: center;
     justify-content: flex-start;
     text-align: center;
-    padding: clamp(64px, 16vh, 170px) clamp(24px, 6vw, 40px) 96px;
+    /* Design handoff's inset, nudged 10px lower per user request. */
+    padding: calc(clamp(64px, 16vh, 170px) + 10px) clamp(24px, 6vw, 40px) 96px;
   }
 
   h1 {
