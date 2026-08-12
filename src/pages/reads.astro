@@ -10,6 +10,7 @@ const reads = (await getCollection('reads')).sort(
 
 <BaseLayout title="Reads" description="Books and essays I keep coming back to.">
   <div class="page">
+    <p class="lead">Books I've read recently</p>
     <div class="list">
       {reads.map((read) => <ReadItem read={read} />)}
     </div>
@@ -20,7 +21,13 @@ const reads = (await getCollection('reads')).sort(
   .page {
     max-width: 660px;
     margin: 0 auto;
-    padding: clamp(52px, 9vh, 104px) clamp(24px, 6vw, 40px) 120px;
+    padding: clamp(24px, 4vh, 48px) clamp(24px, 6vw, 40px) 120px;
+  }
+
+  .lead {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 8px;
   }
 
   .list {

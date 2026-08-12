@@ -11,9 +11,16 @@ const { title, author, type, dateRead, rating } = read.data;
 const { Content } = await render(read);
 
 const stars = rating ? '★'.repeat(rating) + '☆'.repeat(5 - rating) : null;
+
+// Long notes collapse to a 4-line preview. The preview text comes from the raw
+// body (not the rendered HTML) with the paragraphs run together; short
+// single-paragraph notes render in full with no toggle at all.
+const paragraphs = (read.body ?? '').trim().split(/\n{2,}/);
+const flat = paragraphs.join(' ');
+const hasMore = paragraphs.length > 1 || flat.length > 230;
 ---
 
-<article class="row">
+<article class="row" data-collapsible={hasMore ? '' : undefined}>
   <div class="head">
     <span class="title">{title}</span>
     <span class="year">{dateRead.getUTCFullYear()}</span>
@@ -22,10 +29,32 @@ const stars = rating ? '★'.repeat(rating) + '☆'.repeat(5 - rating) : null;
     {author} · {type}
     {stars && <span class="stars" aria-label={`Rated ${rating} out of 5`}> {stars}</span>}
   </div>
+  {hasMore && <div class="note-preview">{flat}</div>}
   <div class="note">
     <Content />
   </div>
+  {
+    hasMore && (
+      <button type="button" class="toggle" data-read-toggle aria-expanded="false">
+        Show more ↓
+      </button>
+    )
+  }
 </article>
+
+<script>
+  // Bundled once for the page, not per instance — hence the querySelectorAll.
+  document.querySelectorAll<HTMLButtonElement>('[data-read-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const row = btn.closest('.row');
+      if (!row) return;
+      const wasExpanded = row.hasAttribute('data-expanded');
+      row.toggleAttribute('data-expanded', !wasExpanded);
+      btn.setAttribute('aria-expanded', String(!wasExpanded));
+      btn.textContent = wasExpanded ? 'Show more ↓' : 'Show less ↑';
+    });
+  });
+</script>
 
 <style>
   .row {
@@ -69,14 +98,74 @@ const stars = rating ? '★'.repeat(rating) + '☆'.repeat(5 - rating) : null;
     color: var(--accent);
   }
 
-  .note {
+  /* 4 lines at 12.5px × 1.85 = 92.5px. Recompute if the note scale changes. */
+  .note-preview {
+    position: relative;
+    overflow: hidden;
+    max-height: 92.5px;
+    margin: 12px 0 0;
     font-size: 12.5px;
     color: var(--muted);
     line-height: 1.85;
-    margin-top: 12px;
+  }
+
+  .note-preview::after {
+    content: '…';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    padding-left: 26px;
+    color: var(--muted);
+    background: linear-gradient(to right, rgba(0, 0, 0, 0), var(--bg) 62%);
   }
 
   .note :global(p) {
-    margin: 0;
+    margin: 7px 0 0;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.85;
+  }
+
+  .note :global(p:first-child) {
+    margin: 12px 0 0;
+  }
+
+  .row[data-collapsible]:not([data-expanded]) .note {
+    display: none;
+  }
+
+  .row[data-expanded] .note-preview {
+    display: none;
+  }
+
+  .toggle {
+    margin-top: 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--rule);
+    padding: 0 0 3px;
+    cursor: pointer;
+    transition: color 0.18s ease;
+  }
+
+  .toggle:hover {
+    color: var(--ink);
+  }
+
+  /* A bare Ctrl+P on /reads should print every note in full. */
+  @media print {
+    .note-preview,
+    .toggle {
+      display: none !important;
+    }
+
+    .row[data-collapsible]:not([data-expanded]) .note {
+      display: block !important;
+    }
   }
 </style>
