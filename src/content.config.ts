@@ -22,6 +22,16 @@ const projects = defineCollection({
       // set per project to bias the crop (e.g. '50% 39%' for tall phone captures).
       imagePosition: z.string().default('50% 50%'),
       caption: z.string().optional(), // figure placeholder caption; falls back to the title
+      // Screenshots shown as a grid at the bottom of the detail page. When
+      // empty, the page falls back to the striped figure placeholder.
+      gallery: z
+        .array(
+          z.object({
+            src: image(),
+            caption: z.string().optional(), // shown under the image; also the alt text
+          }),
+        )
+        .default([]),
       bullets: z.array(z.string()).default([]), // highlight list on the detail page
       featured: z.boolean().default(false), // featured projects appear on the homepage and resume
       draft: z.boolean().default(false), // drafts are hidden everywhere

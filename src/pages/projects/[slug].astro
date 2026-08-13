@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { url } from '../../data/site';
 import { formatProjectDate } from '../../utils/formatProjectDate';
@@ -18,7 +19,7 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const { title, description, role, startDate, endDate, tags, repoUrl, demoUrl, bullets, caption } =
+const { title, description, role, startDate, endDate, tags, repoUrl, demoUrl, bullets, caption, gallery } =
   project.data;
 const { Content } = await render(project);
 
@@ -53,12 +54,26 @@ const metaLine = [role, formatProjectDate(startDate, endDate), tags.join(' · ')
       </ul>
     )}
 
-    <div class="figure-wrap">
-      <div class="figure">
-        <span class="chip">[ {caption || title} ]</span>
+    {gallery.length > 0 ? (
+      <section class="gallery-wrap">
+        <div class="gallery-label">Screens</div>
+        <div class="gallery">
+          {gallery.map((shot) => (
+            <figure class="shot">
+              <Image src={shot.src} alt={shot.caption || title} width={480} />
+              {shot.caption && <figcaption>{shot.caption}</figcaption>}
+            </figure>
+          ))}
+        </div>
+      </section>
+    ) : (
+      <div class="figure-wrap">
+        <div class="figure">
+          <span class="chip">[ {caption || title} ]</span>
+        </div>
+        <div class="drop-label">Drop a screenshot here</div>
       </div>
-      <div class="drop-label">Drop a screenshot here</div>
-    </div>
+    )}
   </div>
 </BaseLayout>
 
@@ -143,8 +158,49 @@ const metaLine = [role, formatProjectDate(startDate, endDate), tags.join(' · ')
     color: var(--accent);
   }
 
-  .figure-wrap {
+  .figure-wrap,
+  .gallery-wrap {
     margin-top: clamp(36px, 6vh, 60px);
+  }
+
+  .gallery-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-bottom: 13px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .gallery {
+    display: grid;
+    /* Tall phone captures sit happily at ~150-210px wide inside the 640px
+       column; auto-fit collapses to fewer columns on narrow screens. */
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .shot {
+    margin: 0;
+  }
+
+  .shot :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--rule);
+  }
+
+  .shot figcaption {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-top: 10px;
   }
 
   .figure {
