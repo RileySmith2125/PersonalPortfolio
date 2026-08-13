@@ -58,6 +58,9 @@ const { title, description, image } = project.data;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    /* Biased above centre so tall phone captures keep their upper content
+       in frame rather than showing only the middle band. */
+    object-position: 50% 39%;
   }
 
   .chip {
