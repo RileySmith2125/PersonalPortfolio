@@ -17,7 +17,7 @@ gallery:
     caption: Storyline timeline with background context
 bullets:
   - Pulls news from authoritative sources around the world, regardless of language
-  - Uses contextual information to determine story locations
+  - Uses context found in the story to determine location
   - a third thing
 featured: true
 ---
