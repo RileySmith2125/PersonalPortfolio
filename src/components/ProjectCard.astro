@@ -8,13 +8,13 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const { title, description, image } = project.data;
+const { title, description, image, imagePosition } = project.data;
 ---
 
 <a class="card" href={url(`/projects/${project.id}`)}>
   <div class="thumb">
     {image ? (
-      <Image src={image} alt={title} width={640} />
+      <Image src={image} alt={title} width={640} style={`object-position: ${imagePosition};`} />
     ) : (
       <span class="chip">{title}</span>
     )}
@@ -58,9 +58,8 @@ const { title, description, image } = project.data;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* Biased above centre so tall phone captures keep their upper content
-       in frame rather than showing only the middle band. */
-    object-position: 50% 39%;
+    /* Crop bias is per project: `imagePosition` in the project's frontmatter
+       lands here as an inline style, defaulting to centred. */
   }
 
   .chip {

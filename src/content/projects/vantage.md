@@ -6,6 +6,7 @@ startDate: 2026-01-04
 tags: [x-tag, y-tag, z-tag]
 repoUrl: https://github.com/rileysmith/halyard
 image: ../../assets/projects/vantage.png
+imagePosition: '50% 39%'
 caption: Halyard — operation-log inspector
 bullets:
   - Deterministic CRDT merge with causal ordering and tombstone GC

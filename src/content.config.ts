@@ -18,6 +18,9 @@ const projects = defineCollection({
       repoUrl: z.string().url().optional(),
       demoUrl: z.string().url().optional(),
       image: image().optional(),
+      // CSS object-position for the card thumbnail's 4:3 crop. Defaults to centred;
+      // set per project to bias the crop (e.g. '50% 39%' for tall phone captures).
+      imagePosition: z.string().default('50% 50%'),
       caption: z.string().optional(), // figure placeholder caption; falls back to the title
       bullets: z.array(z.string()).default([]), // highlight list on the detail page
       featured: z.boolean().default(false), // featured projects appear on the homepage and resume
