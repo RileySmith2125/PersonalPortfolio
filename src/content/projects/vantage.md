@@ -3,15 +3,15 @@ title: Vantage
 description: Map of Geopolitics
 role: Solo
 startDate: 2026-01-04
-tags: [x-tag, y-tag, z-tag]
+tags: [Geopolitics, App Development, z-tag]
 repoUrl: https://github.com/rileysmith/halyard
 image: ../../assets/projects/vantage.png
 imagePosition: '50% 33%'
 caption: Halyard — operation-log inspector
 bullets:
-  - Deterministic CRDT merge with causal ordering and tombstone GC
-  - SQLite-backed storage, identical API in the browser (WASM) and native
-  - Sub-millisecond local reads; sync is a background reconciliation, never a blocker
+  - Pulls news from authoritative sources around the world, regardless of language
+  - Uses contextual information to determine story locations
+  - a third thing
 featured: true
 ---
 
