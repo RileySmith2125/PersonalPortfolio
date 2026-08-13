@@ -8,6 +8,13 @@ repoUrl: https://github.com/rileysmith/halyard
 image: ../../assets/projects/vantage.png
 imagePosition: '50% 33%'
 caption: Halyard — operation-log inspector
+gallery:
+  - src: ../../assets/projects/vantage-map-1.png
+    caption: Map view with today's stories
+  - src: ../../assets/projects/vantage-storylines-1.png
+    caption: Saved storylines
+  - src: ../../assets/projects/vantage-storyline-inside-1.png
+    caption: Storyline timeline with background context
 bullets:
   - Pulls news from authoritative sources around the world, regardless of language
   - Uses contextual information to determine story locations
