@@ -3,7 +3,7 @@ title: "The Hot Zone: A Terrifying True Story"
 author: Richard Preston
 type: book
 dateRead: 2026-08-10
-rating: 3
+rating: 4
 ---
 
 The Hot Zone recounts stories of the first human encounters with Ebola, and dives deep into the first moment that Ebola appeared in the US- when an infected shipment of monkeys appeared in Washington D.C. and began dropping dead. It follows the military biohazard team that got called in to handle this situation, detailing the team's rapid and covert response to a highly lethal and barely understood virus.
