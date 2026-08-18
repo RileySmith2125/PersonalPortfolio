@@ -24,4 +24,4 @@ featured: true
 
 Vantage is an app I created to explore Geopolitics news around the world. It's user driven and exploration-centric. Pan and zoom around the world map and it will populate with news stories from the region you're looking at, each plotted as a pin at its real world location.
 
-If a particular story catches your interest you can save it to a Storyline. A Storyline is like a super-powered bookmark. It saves the story, but it also populates a timeline with past context which includes both news stories and AI summaries of relevant background context. As new developments occur, those will also wind up on the Storyline so that you can continue to track developments.
+If a particular story catches your interest you can save it to a Storyline. A Storyline is like a super-powered bookmark. It saves the story, but it also populates a timeline with past context which includes both news stories and AI summaries of relevant background information. As new developments occur, those will also be placed on the Storyline so that you can continue to track developments.
