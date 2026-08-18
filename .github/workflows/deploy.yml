@@ -10,6 +10,13 @@ permissions:
   pages: write
   id-token: write
 
+# GitHub Pages allows only one active deployment at a time. Without this,
+# a push that lands while an earlier deploy is still publishing is rejected
+# with a 400. Queue runs instead; never cancel one mid-publish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
