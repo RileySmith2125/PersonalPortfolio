@@ -60,7 +60,7 @@ const metaLine = [role, formatProjectDate(startDate, endDate), tags.join(' · ')
         <div class="gallery">
           {gallery.map((shot) => (
             <figure class="shot">
-              <Image src={shot.src} alt={shot.caption || title} width={480} />
+              <Image src={shot.src} alt={shot.caption || title} width={640} />
               {shot.caption && <figcaption>{shot.caption}</figcaption>}
             </figure>
           ))}
@@ -158,9 +158,17 @@ const metaLine = [role, formatProjectDate(startDate, endDate), tags.join(' · ')
     color: var(--accent);
   }
 
-  .figure-wrap,
+  .figure-wrap {
+    margin-top: clamp(36px, 6vh, 60px);
+  }
+
+  /* The gallery breaks out of the 640px prose column so phone captures get
+     real size. Centres on the column regardless of its padding. */
   .gallery-wrap {
     margin-top: clamp(36px, 6vh, 60px);
+    width: min(880px, calc(100vw - 48px));
+    margin-left: 50%;
+    transform: translateX(-50%);
   }
 
   .gallery-label {
@@ -175,10 +183,10 @@ const metaLine = [role, formatProjectDate(startDate, endDate), tags.join(' · ')
 
   .gallery {
     display: grid;
-    /* Tall phone captures sit happily at ~150-210px wide inside the 640px
-       column; auto-fit collapses to fewer columns on narrow screens. */
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 20px;
+    /* 220px min keeps three phone captures across at ~280px inside the
+       880px breakout; auto-fit drops to fewer columns on narrow screens. */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
     margin-top: 20px;
   }
 
